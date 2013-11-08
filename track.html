@@ -68,9 +68,7 @@ $(document).ready(function(){
 <body> 
 <div id="map_canvas" style="width:1024px;height:600px"></div> 
 <div id="result" style="float:right;position:absolute;left:1040px;top:0;">
-	<!--这里就是调用那个插件-->
 	<select multiple id="select">
-		
 	</select>
 </div>
 </div>
@@ -101,7 +99,7 @@ $(document).ready(function(){
 //adds.push(new BMap.Point(121.472168,31.193848));
 //alert('120');
 
-function sortArr(ar,key){//按key排序
+  function sortArr(ar,key){//按key排序
      var inde=[];
      ar[key]=ar[key].sort(function(a,b){
          var d=a > b;
@@ -121,20 +119,20 @@ function sortArr(ar,key){//按key排序
          }
      }
      return ar;
-}
+  }
 
-function bdGEO(){
-		var pt = adds[0][index];
-		geocodeSearch(pt);
-		index++;
-}
-function geocodeSearch(pt){
+  function bdGEO(){
+     var pt = adds[0][index];
+     geocodeSearch(pt);
+     index++;
+  }
+  function geocodeSearch(pt){
 	//alert(index);
 		if(index  < adds[0].length){
 			setTimeout(window.bdGEO,0);
 		} 
 		myGeo.getLocation(pt, function(rs){
-			var addComp = rs.addressComponents;
+      var addComp = rs.addressComponents;
 			//var name = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
       var name = addComp.city + addComp.district + addComp.street + addComp.streetNumber;
 			var label = new BMap.Label(name,{position:pt});
@@ -157,15 +155,14 @@ function geocodeSearch(pt){
             lushu = new BMapLib.LuShu(map,adds[0],{
             defaultContent:"路径追踪",
             speed:3000
-            });          
-           
+            });                     
         }
     }
   });
 
 
 //绑定事件
-$$("draw").onclick = function(){
+  $$("draw").onclick = function(){
 		map.clearOverlays();
 		index = 0;
 		var values = $("select").val();
@@ -186,7 +183,7 @@ $$("draw").onclick = function(){
 			drv.search(adds[0][i], adds[0][i+1]);
 		}
 		map.setViewport(adds[0]);
-};
+  };
 
 	$$("run").onclick = function(){
 	  lushu.start();
@@ -206,23 +203,7 @@ $$("draw").onclick = function(){
 	function $$(element){
 		return document.getElementById(element);
 	}
-	$$("checkall").onclick = function(){
-		var subadds = document.getElementsByName("aa");
-		adds.length = 0;
-		for(var i = 0;i<subadds.length;i++){
-			if(!subadds[i].checked) subadds[i].checked = true;
-			//alert(subadds[i].value);
-			var point = subadds[i].value;
-			var points = point.split(",");
-			adds.push(new BMap.Point(parseFloat(points[0]),parseFloat(points[1]))) ;
-		}
-	}
-	$$("uncheck").onclick = function(){
-		var subadds = document.getElementsByName("aa");
-		for(var i = 0;i<subadds.length;i++)
-			if(subadds[i].checked) subadds[i].checked = false;
-		 adds.length = 0;
-	}
+	
 
 </script> 
 
