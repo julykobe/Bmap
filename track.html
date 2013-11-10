@@ -4,7 +4,10 @@
 <meta charset="utf-8" /> 
 <title>轨迹</title> 
 <script src="http://api.map.baidu.com/api?v=1.2&ak=31b2545ee3ce8d70782e26d471ba711d"></script> 
+<!--
 <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
+-->
+<script type="text/javascript" src="js/lushu.js"></script>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/prettify.js"></script>
@@ -18,8 +21,9 @@
 
   //全局变量
   var adds = new Array();
-  adds[0] = new Array();
-  adds[1] = new Array();
+  adds[0] = new Array();//lng,lat
+  adds[1] = new Array();//time
+  adds[2] = new Array();//all+extend
   var lushu;
   var index = 0;
   //------------------------------------
@@ -105,17 +109,39 @@ $(function(){
               arrPois.push(res.getEnd().point);
               map.addOverlay(new BMap.Polyline(arrPois, {strokeColor: '#111'}));
                          
-              lushu = new BMapLib.LuShu(map,adds[0],{
+              lushu = new BMapLib.LuShu(map,adds[2],{
               defaultContent:"路径追踪",
-              speed:4000
+              speed:6000
               });          
           }
         }
       });//end drv
       //------------------------------------
       
+      //add extend points
+      
+      
       //添加画点事件
-      function drawPoint(){
+      function drawPoint(){//ready for lushu
+        function addExtendpoints(a,b){
+        var startlng = a.lng,startlat = a.lat;
+        var endlng = b.lng,endlat = b.lat;
+        var addPointNum = 300;
+        var lngGap = (endlng - startlng)/addPointNum;
+        var latGap = (endlat - startlat)/addPointNum;
+        adds[2].push(new BMap.Point(a.lng,a.lat));
+        for(var i=1;i<=addPointNum;i++){
+          var templng =  startlng+lngGap*i;
+          var templat = startlat+latGap*i;
+          adds[2].push(new BMap.Point(templng,templat));
+          //alert(templng);
+        }
+        
+      }
+        for(var i= 0; i+1<adds[0].length; i++){
+          addExtendpoints(adds[0][i],adds[0][i+1]);
+          if(i+1 == adds[0].length){adds[2].push(new BMap.Point(adds[0][i+1]));}
+        }
         for(var i = 0; i<adds[0].length; i++){
           var marker = new BMap.Marker(adds[0][i]);
           map.addOverlay(marker);
@@ -167,6 +193,9 @@ $(function(){
     function initData(){
       baiduMap.map.clearOverlays();
       index = 0;
+      adds[0].length = 0;
+      adds[1].length = 0;
+      adds[2].length = 0;
       var values = $("select").val();
       for(var i = 0; i<values.length; i++){
         var v = values[i];
@@ -199,7 +228,11 @@ $(function(){
 	  lushu.start();
 	}
 	$$("stop").onclick = function(){
-		lushu.stop();
+		lushu.pause();
+		processData.initData();	
+    baiduMap.drawPoint();
+    baiduMap.drawLabel();
+    baiduMap.drawLine();
 	}
 	$$("pause").onclick = function(){
 		lushu.pause();
@@ -227,7 +260,6 @@ $(function(){
 	</select>
 </div>
 </div>
-
 
 <button id="run" >run</button> 
 <button id="stop">stop</button> 
