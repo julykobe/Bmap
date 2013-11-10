@@ -5,33 +5,37 @@
 <title>轨迹</title> 
 <script src="http://api.map.baidu.com/api?v=1.2&ak=31b2545ee3ce8d70782e26d471ba711d"></script> 
 <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
-<script type="text/javascript" src="./jquery.js"></script>
-<link rel="stylesheet" type="text/css" href="jquery.multiselect.css" />
-<link rel="stylesheet" type="text/css" href="assets/style.css" />
-<link rel="stylesheet" type="text/css" href="assets/prettify.css" />
-<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/ui-lightness/jquery-ui.css" />
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
-<script type="text/javascript" src="assets/prettify.js"></script>
-<script type="text/javascript" src="jquery.multiselect.js"></script>
+<script type="text/javascript" src="js/prettify.js"></script>
+<script type="text/javascript" src="js/jquery.multiselect.js"></script>
+<link rel="stylesheet" type="text/css" href="css/jquery.multiselect.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<link rel="stylesheet" type="text/css" href="css/prettify.css" />
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/ui-lightness/jquery-ui.css" />
+
 <script type="text/javascript">
 
-var adds = new Array();
-adds[0] = new Array();
-adds[1] = new Array();
+  //全局变量
+  var adds = new Array();
+  adds[0] = new Array();
+  adds[1] = new Array();
+  var lushu;
+  var index = 0;
+  //------------------------------------
 
-$(function(){
-	$("select").multiselect({
+
+$(function(){    
+    //初始化下拉复选框
+    $("select").multiselect({
         noneSelectedText: "==请选择==",
         checkAllText: "全选",
         uncheckAllText: '全不选',
     });
-});
-
-
-$(document).ready(function(){
+    //------------------------------------
+    //获取xml数据并添加到下拉框
     $.ajax({
-			url: './gps2.xml',
+			url: 'data/gps2.xml',
 			dataType: 'xml',
 			type: 'GET',
 			timeout: 1000,
@@ -39,7 +43,6 @@ $(document).ready(function(){
 				alert("loading xml error");
 			},
 			success: function(xml){
-			//alert("aaa");
 				$(xml).find("location").each(function(){
 					var oId = $(this).children("Longitude");
 					var oLn = $(this).children("Latitude");
@@ -59,130 +62,137 @@ $(document).ready(function(){
 				})
 			}
 		});
-});
-</script>
-<style>
-#checkbox{margin-left:335px;margin-top:8px;}
-</style>
-</head> 
-<body> 
-<div id="map_canvas" style="width:1024px;height:600px"></div> 
-<div id="result" style="float:right;position:absolute;left:1040px;top:0;">
-	<select multiple id="select">
-	</select>
-</div>
-</div>
-
-
-<button id="run" >run</button> 
-<button id="stop">stop</button> 
-<button id="pause">pause</button> 
-<button id="hide">hide infoWindow</button> 
-<button id="show">show infoWindow</button> 
-<button id="draw">draw</button>
-<script> 
-	var map = new BMap.Map('map_canvas');
-	map.centerAndZoom(new BMap.Point(121.638358,31.025287), 13);
-	setTimeout(function(){
-		map.setZoom(14);   //放到到14级
-	}, 1500);
-
-	map.enableScrollWheelZoom(true);
-
-	var index = 0;
-
-	var myGeo = new BMap.Geocoder();
-
-
-
-
-//adds.push(new BMap.Point(121.472168,31.193848));
-//alert('120');
-
-  function sortArr(ar,key){//按key排序
-     var inde=[];
-     ar[key]=ar[key].sort(function(a,b){
-         var d=a > b;
-         inde.push(d);
-         return d;
-     });
-     for(var i=0;i<ar.length;i++){
-         if(i!=key){
-             var pointer=0;
-             ar[i]=ar[i].sort(function(a,b){
-                 if(pointer<inde.length){
-                     return inde[pointer++];
-                 }else{
-                     return 0;
-                 }
-             });
-         }
-     }
-     return ar;
-  }
-
-  function bdGEO(){
-     var pt = adds[0][index];
-     geocodeSearch(pt);
-     index++;
-  }
-  function geocodeSearch(pt){
-	//alert(index);
-		if(index  < adds[0].length){
-			setTimeout(window.bdGEO,0);
-		} 
-		myGeo.getLocation(pt, function(rs){
-      var addComp = rs.addressComponents;
-			//var name = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
-      var name = addComp.city + addComp.district + addComp.street + addComp.streetNumber;
-			var label = new BMap.Label(name,{position:pt});
-			map.addOverlay(label);
-		});
-	}
-
-
-  var lushu;
-  var drv = new BMap.DrivingRoute('北京', {
-    onSearchComplete: function(res) {
-        if (drv.getStatus() == BMAP_STATUS_SUCCESS) {
-            //var arrPois = res.getPlan(0).getRoute(0).getPath();
-            var arrPois = [];
-            arrPois.push(res.getStart().point);
-            arrPois.push(res.getEnd().point);
-            map.addOverlay(new BMap.Polyline(arrPois, {strokeColor: '#111'}));
-            //map.setViewport(arrPois);
-                       
-            lushu = new BMapLib.LuShu(map,adds[0],{
-            defaultContent:"路径追踪",
-            speed:3000
-            });                     
+		//------------------------------------
+		
+		//百度地图变量与方法
+		var baiduMap = function(){
+      //初始化地图图层
+      var map = new BMap.Map('map_canvas');
+      map.centerAndZoom(new BMap.Point(121.638358,31.025287), 13);
+      setTimeout(function(){
+        map.setZoom(14);   //放到到14级
+      }, 1500);
+      map.enableScrollWheelZoom(true);//允许滚轮
+      //------------------------------------
+      
+      //添加标签事件
+      function drawLabel(){
+        var pt = adds[0][index];
+        geocodeSearch(pt);
+        index++;
+      }
+      var myGeo = new BMap.Geocoder();
+      function geocodeSearch(pt){
+        if(index  < adds[0].length){
+          setTimeout(baiduMap.drawLabel,0);
+        } 
+        myGeo.getLocation(pt, function(rs){
+          var addComp = rs.addressComponents;
+          var name = addComp.city + addComp.district + addComp.street + addComp.streetNumber;
+          var label = new BMap.Label(name,{position:pt});
+          map.addOverlay(label);
+        });
+      }
+      //------------------------------------
+      
+      //初始化画线事件
+      var drv = new BMap.DrivingRoute('北京', {
+      onSearchComplete: function(res) {
+          if (drv.getStatus() == BMAP_STATUS_SUCCESS) {
+              //var arrPois = res.getPlan(0).getRoute(0).getPath();
+              var arrPois = [];
+              arrPois.push(res.getStart().point);
+              arrPois.push(res.getEnd().point);
+              map.addOverlay(new BMap.Polyline(arrPois, {strokeColor: '#111'}));
+                         
+              lushu = new BMapLib.LuShu(map,adds[0],{
+              defaultContent:"路径追踪",
+              speed:4000
+              });          
+          }
         }
+      });//end drv
+      //------------------------------------
+      
+      //添加画点事件
+      function drawPoint(){
+        for(var i = 0; i<adds[0].length; i++){
+          var marker = new BMap.Marker(adds[0][i]);
+          map.addOverlay(marker);
+        }
+      }
+      //------------------------------------
+      
+      //添加画线事件
+      function drawLine(){
+        for(var i=0;i+1<adds[0].length;i++){
+          drv.search(adds[0][i], adds[0][i+1]);
+        }
+      }
+      //------------------------------------
+      
+      return{
+        map:map,
+        drawPoint:drawPoint,
+        drawLabel:drawLabel,
+        drawLine:drawLine
+      }  
+  }();
+	//------------------------------------
+
+  //处理数据
+	var processData = function(){
+    //多维数组按第key组排序
+    function sortArr(ar,key){//按key排序
+      var inde=[];
+      ar[key]=ar[key].sort(function(a,b){
+        var d=a > b;
+        inde.push(d);
+        return d;
+      });
+      for(var i=0;i<ar.length;i++){
+        if(i!=key){
+          var pointer=0;
+          ar[i]=ar[i].sort(function(a,b){
+            if(pointer<inde.length){return inde[pointer++];}
+             else{return 0;}
+             });
+         }//end if
+      }//end for
+      return ar;
     }
-  });
-
-
+    //------------------------------------
+    
+    //初始化数据
+    function initData(){
+      baiduMap.map.clearOverlays();
+      index = 0;
+      var values = $("select").val();
+      for(var i = 0; i<values.length; i++){
+        var v = values[i];
+        var points = v.split(",");
+        adds[0].push(new BMap.Point(parseFloat(points[0]),parseFloat(points[1]))) ;
+        var d = new Date(Date.parse(points[2].replace(/-/g,"/")));
+        adds[1].push(d);
+      }
+      adds = sortArr(adds,1);
+    }
+    //------------------------------------
+    
+    return{
+      initData:initData
+    }
+	
+	}();
+  //------------------------------------
+  
 //绑定事件
   $$("draw").onclick = function(){
-		map.clearOverlays();
-		index = 0;
-		var values = $("select").val();
-		for(var i = 0; i<values.length; i++){
-			var v = values[i];
-			var points = v.split(",");
-			adds[0].push(new BMap.Point(parseFloat(points[0]),parseFloat(points[1]))) ;
-			var d = new Date(Date.parse(points[2].replace(/-/g,"/")));
-			adds[1].push(d);
-		}
-		adds = sortArr(adds,1);
-		for(var i = 0; i<adds[0].length; i++){
-      var marker = new BMap.Marker(adds[0][i]);
-      map.addOverlay(marker);
-    }
-		bdGEO();
-		for(var i=0;i+1<adds[0].length;i++){
-			drv.search(adds[0][i], adds[0][i+1]);
-		}
-		map.setViewport(adds[0]);
+      processData.initData();	
+      baiduMap.drawPoint();
+      baiduMap.drawLabel();
+      baiduMap.drawLine();
+      baiduMap.map.setViewport(adds[0]);
   };
 
 	$$("run").onclick = function(){
@@ -203,9 +213,28 @@ $(document).ready(function(){
 	function $$(element){
 		return document.getElementById(element);
 	}
-	
+		
+});
+</script>
+<style>
+</style>
+</head> 
+<body> 
+<div id="map_canvas" style="width:1024px;height:600px"></div> 
+<div id="result" style="float:right;position:absolute;left:1040px;top:0;">
+	<!--这里就是调用那个插件-->
+	<select multiple id="select">		
+	</select>
+</div>
+</div>
 
-</script> 
+
+<button id="run" >run</button> 
+<button id="stop">stop</button> 
+<button id="pause">pause</button> 
+<button id="hide">hide infoWindow</button> 
+<button id="show">show infoWindow</button> 
+<button id="draw">draw</button>
 
 </body> 
 </html> 
