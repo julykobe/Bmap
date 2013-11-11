@@ -122,26 +122,7 @@ $(function(){
       
       
       //添加画点事件
-      function drawPoint(){//ready for lushu
-        function addExtendpoints(a,b){
-        var startlng = a.lng,startlat = a.lat;
-        var endlng = b.lng,endlat = b.lat;
-        var addPointNum = 300;
-        var lngGap = (endlng - startlng)/addPointNum;
-        var latGap = (endlat - startlat)/addPointNum;
-        adds[2].push(new BMap.Point(a.lng,a.lat));
-        for(var i=1;i<=addPointNum;i++){
-          var templng =  startlng+lngGap*i;
-          var templat = startlat+latGap*i;
-          adds[2].push(new BMap.Point(templng,templat));
-          //alert(templng);
-        }
-        
-      }
-        for(var i= 0; i+1<adds[0].length; i++){
-          addExtendpoints(adds[0][i],adds[0][i+1]);
-          if(i+1 == adds[0].length){adds[2].push(new BMap.Point(adds[0][i+1]));}
-        }
+      function drawPoint(){
         for(var i = 0; i<adds[0].length; i++){
           var marker = new BMap.Marker(adds[0][i]);
           map.addOverlay(marker);
@@ -205,6 +186,24 @@ $(function(){
         adds[1].push(d);
       }
       adds = sortArr(adds,1);
+      function addExtendpoints(a,b){
+        var startlng = a.lng,startlat = a.lat;
+        var endlng = b.lng,endlat = b.lat;
+        var addPointNum = 300;
+        var lngGap = (endlng - startlng)/addPointNum;
+        var latGap = (endlat - startlat)/addPointNum;
+        adds[2].push(new BMap.Point(a.lng,a.lat));
+        for(var i=1;i<=addPointNum;i++){
+          var templng =  startlng+lngGap*i;
+          var templat = startlat+latGap*i;
+          adds[2].push(new BMap.Point(templng,templat));
+          //alert(templng);
+        }        
+      }
+      for(var i= 0; i+1<adds[0].length; i++){
+        addExtendpoints(adds[0][i],adds[0][i+1]);
+        if(i+1 == adds[0].length){adds[2].push(new BMap.Point(adds[0][i+1]));}
+      }
     }
     //------------------------------------
     
