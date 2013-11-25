@@ -1,8 +1,8 @@
 <!DOCTYPE html> 
 <html lang="en"> 
 <head> 
-<meta charset="utf-8" /> 
-<title>è½¨è¿¹</title> 
+<meta charset="gbk" /> 
+<title>¹ì¼£</title> 
 <script src="http://api.map.baidu.com/api?v=1.2&ak=31b2545ee3ce8d70782e26d471ba711d"></script> 
 <!--
 <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
@@ -19,7 +19,7 @@
 
 <script type="text/javascript">
 
-  //å…¨å±€å˜é‡
+  //È«¾Ö±äÁ¿
   var adds = new Array();
   adds[0] = new Array();//lng,lat
   adds[1] = new Array();//time
@@ -30,16 +30,14 @@
 
 
 $(function(){    
-    //åˆå§‹åŒ–ä¸‹æ‹‰å¤é€‰æ¡†
+    //³õÊ¼»¯ÏÂÀ­¸´Ñ¡¿ò
     $("select").multiselect({
-        noneSelectedText: "==è¯·é€‰æ‹©==",
-        checkAllText: "å…¨é€‰",
-        uncheckAllText: 'å…¨ä¸é€‰',
-        selectedText: '# ä¸ªè¢«é€‰',
-	
+        noneSelectedText: "==ÇëÑ¡Ôñ==",
+        checkAllText: "È«Ñ¡",
+        uncheckAllText: 'È«²»Ñ¡',
     });
     //------------------------------------
-    //è·å–xmlæ•°æ®å¹¶æ·»åŠ åˆ°ä¸‹æ‹‰æ¡†
+    //»ñÈ¡xmlÊı¾İ²¢Ìí¼Óµ½ÏÂÀ­¿ò
     $.ajax({
 			url: 'data/gps2.xml',
 			dataType: 'xml',
@@ -53,12 +51,12 @@ $(function(){
 					var oId = $(this).children("Longitude");
 					var oLn = $(this).children("Latitude");
 					var oTm = $(this).children("Time");
-					//è·å–idèŠ‚ç‚¹çš„æ–‡æœ¬å€¼ï¼›
+					//»ñÈ¡id½ÚµãµÄÎÄ±¾Öµ£»
 					var IdValue = oId.text();
 					var LnValue = oLn.text();
 					var TmValue = oTm.text();
 					var tvalue = IdValue+","+LnValue+","+TmValue;
-					//è¿™é‡ŒæŠŠå€¼æŠŠåæ ‡åŠ å…¥åˆ°ä¸‹æ‹‰æ¡†
+					//ÕâÀï°ÑÖµ°Ñ×ø±ê¼ÓÈëµ½ÏÂÀ­¿ò
 					var  opt = $('<option />', {
 							value: tvalue,
 							text: TmValue
@@ -70,18 +68,18 @@ $(function(){
 		});
 		//------------------------------------
 		
-		//ç™¾åº¦åœ°å›¾å˜é‡ä¸æ–¹æ³•
+		//°Ù¶ÈµØÍ¼±äÁ¿Óë·½·¨
 		var baiduMap = function(){
-      //åˆå§‹åŒ–åœ°å›¾å›¾å±‚
+      //³õÊ¼»¯µØÍ¼Í¼²ã
       var map = new BMap.Map('map_canvas');
       map.centerAndZoom(new BMap.Point(121.638358,31.025287), 13);
       setTimeout(function(){
-        map.setZoom(14);   //æ”¾åˆ°åˆ°14çº§
+        map.setZoom(14);   //·Åµ½µ½14¼¶
       }, 1500);
-      map.enableScrollWheelZoom(true);//å…è®¸æ»šè½®
+      map.enableScrollWheelZoom(true);//ÔÊĞí¹öÂÖ
       //------------------------------------
       
-      //æ·»åŠ æ ‡ç­¾äº‹ä»¶
+      //Ìí¼Ó±êÇ©ÊÂ¼ş
       function drawLabel(){
         var pt = adds[0][index];
         geocodeSearch(pt);
@@ -101,8 +99,8 @@ $(function(){
       }
       //------------------------------------
       
-      //åˆå§‹åŒ–ç”»çº¿äº‹ä»¶
-      var drv = new BMap.DrivingRoute('åŒ—äº¬', {
+      //³õÊ¼»¯»­ÏßÊÂ¼ş
+      var drv = new BMap.DrivingRoute('±±¾©', {
       onSearchComplete: function(res) {
           if (drv.getStatus() == BMAP_STATUS_SUCCESS) {
               //var arrPois = res.getPlan(0).getRoute(0).getPath();
@@ -116,7 +114,7 @@ $(function(){
       //------------------------------------
            
       
-      //æ·»åŠ ç”»ç‚¹äº‹ä»¶
+      //Ìí¼Ó»­µãÊÂ¼ş
       function drawPoint(){
         for(var i = 0; i<adds[0].length; i++){
           var marker = new BMap.Marker(adds[0][i]);
@@ -125,7 +123,7 @@ $(function(){
       }
       //------------------------------------
       
-      //æ·»åŠ ç”»çº¿äº‹ä»¶
+      //Ìí¼Ó»­ÏßÊÂ¼ş
       function drawLine(){
         for(var i=0;i+1<adds[0].length;i++){
           drv.search(adds[0][i], adds[0][i+1]);
@@ -133,10 +131,10 @@ $(function(){
       }
       //------------------------------------
       
-      //åˆå§‹åŒ–lushu
+      //³õÊ¼»¯lushu
       function initLushu(){
         lushu = new BMapLib.LuShu(map,adds[2],{
-                defaultContent:"è·¯å¾„è¿½è¸ª",
+                defaultContent:"Â·¾¶×·×Ù",
                 speed:6000
         });
       }   
@@ -152,10 +150,10 @@ $(function(){
   }();
 	//------------------------------------
 
-  //å¤„ç†æ•°æ®
+  //´¦ÀíÊı¾İ
 	var processData = function(){
-    //å¤šç»´æ•°ç»„æŒ‰ç¬¬keyç»„æ’åº
-    function sortArr(ar,key){//æŒ‰keyæ’åº
+    //¶àÎ¬Êı×é°´µÚkey×éÅÅĞò
+    function sortArr(ar,key){//°´keyÅÅĞò
       var inde=[];
       ar[key]=ar[key].sort(function(a,b){
         var d=a > b;
@@ -175,16 +173,14 @@ $(function(){
     }
     //------------------------------------
     
-    //åˆå§‹åŒ–æ•°æ®
+    //³õÊ¼»¯Êı¾İ
     function initData(){
       baiduMap.map.clearOverlays();
       index = 0;
       adds[0].length = 0;
       adds[1].length = 0;
       adds[2].length = 0;
-      var values = $("select").multiselect("getChecked").map(function(){
-				return this.value;    
-		}).get();
+      var values = $("select").val();
       for(var i = 0; i<values.length; i++){
         var v = values[i];
         var points = v.split(",");
@@ -193,7 +189,7 @@ $(function(){
         adds[1].push(d);
       }
       adds = sortArr(adds,1);
-      //å¢åŠ lushuæš‚åœç”¨çš„ç‚¹
+      //Ôö¼ÓlushuÔİÍ£ÓÃµÄµã
       function addExtendpoints(a,b){
         var startlng = a.lng,startlat = a.lat;
         var endlng = b.lng,endlat = b.lat;
@@ -222,7 +218,7 @@ $(function(){
 	}();
   //------------------------------------
   
-//ç»‘å®šäº‹ä»¶
+//°ó¶¨ÊÂ¼ş
   $$("draw").onclick = function(){
       processData.initData();
       baiduMap.drawPoint();
@@ -236,7 +232,7 @@ $(function(){
 	  lushu.start();
 	}
 	$$("stop").onclick = function(){
-    //stop æœ‰bugï¼Œç”¨ä¸‹é¢çš„æ¨¡æ‹Ÿstop
+    //stop ÓĞbug£¬ÓÃÏÂÃæµÄÄ£Äâstop
     lushu.pause();
     var lan = baiduMap.map.getOverlays()
     baiduMap.map.removeOverlay(lan[lan.length-1]);
@@ -255,18 +251,6 @@ $(function(){
 	function $$(element){
 		return document.getElementById(element);
 	}
-
-	$$("fanxuan").onclick = function(){
-		$("select").multiselect("widget").find(":checkbox").each(function(){
-			if(this.checked){
-				this.checked=false;
-			}else{
-				this.click();
-				this.checked=true;
-			}
-		});
-		
-	}
 		
 });
 </script>
@@ -276,7 +260,7 @@ $(function(){
 <body> 
 <div id="map_canvas" style="width:1024px;height:600px"></div> 
 <div id="result" style="float:right;position:absolute;left:1040px;top:0;">
-	<!--è¿™é‡Œå°±æ˜¯è°ƒç”¨é‚£ä¸ªæ’ä»¶-->
+	<!--ÕâÀï¾ÍÊÇµ÷ÓÃÄÇ¸ö²å¼ş-->
 	<select multiple id="select">		
 	</select>
 </div>
@@ -288,6 +272,6 @@ $(function(){
 <button id="hide">hide infoWindow</button> 
 <button id="show">show infoWindow</button> 
 <button id="draw">draw</button>
-<button id="fanxuan">åé€‰</button>
+
 </body> 
 </html> 
